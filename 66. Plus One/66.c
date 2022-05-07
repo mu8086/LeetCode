@@ -19,8 +19,7 @@ int* plusOne(int* digits, int digitsSize, int* returnSize){
         memcpy(&ret[1], digits, sizeof(int) * digitsSize);
     } else {
         *returnSize = digitsSize;
-        ret = (int*) malloc(sizeof(int) * *returnSize);
-        memcpy(ret, digits, sizeof(int) * digitsSize);
+        return digits;
     }
     
     return ret;
