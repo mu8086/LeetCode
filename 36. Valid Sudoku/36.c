@@ -1,15 +1,13 @@
 bool isValidCol(char** board, int boardSize, int col) {
-    char tmp[9] = {};
-
     for (int i=0; i<boardSize; i++) {
         if (board[i][col] == '.') {
             continue;
         }
         
-        if (tmp[board[i][col] - '1'] == '\0') {
-            tmp[board[i][col] - '1'] = board[i][col];
-        } else {
-            return false;
+        for (int k=i+1; k<boardSize; k++) {
+            if (board[i][col] == board[k][col]) {
+                return false;
+            }
         }
     }
 
@@ -17,17 +15,15 @@ bool isValidCol(char** board, int boardSize, int col) {
 }
 
 bool isValidRow(char** board, int boardSize, int row) {
-    char tmp[9] = {};
-
     for (int j=0; j<boardSize; j++) {
         if (board[row][j] == '.') {
             continue;
         }
         
-        if (tmp[board[row][j] - '1'] == '\0') {
-            tmp[board[row][j] - '1'] = board[row][j];
-        } else {
-            return false;
+        for (int l=j+1; l<boardSize; l++) {
+            if (board[row][j] == board[row][l]) {
+                return false;
+            }
         }
     }
 
@@ -37,18 +33,21 @@ bool isValidRow(char** board, int boardSize, int row) {
 bool isValidGrid(char** board, int grid) {
     int gridLeftIndex = (grid % 3) * 3;
     int gridTopIndex = (grid / 3) * 3;
-    char tmp[9] = {};
 
-    for (int i=gridTopIndex+2; i>=gridTopIndex; i--) {
-        for (int j=gridLeftIndex+2; j>=gridLeftIndex; j--) {
+    int i, j, k, l;
+    for (i=gridTopIndex+2; i>=gridTopIndex; i--) {
+        for (j=gridLeftIndex+2; j>=gridLeftIndex; j--) {
             if (board[i][j] == '.') {
                 continue;
             }
             
-            if (tmp[board[i][j] - '1'] == '\0') {
-                tmp[board[i][j] - '1'] = board[i][j];
-            } else {
-                return false;
+            for (k=i; k>=gridTopIndex; k--) {
+                l = (k==i) ? j-1 : gridLeftIndex+2 ;
+                for ( ; l>=gridLeftIndex; l--) {
+                    if (board[i][j] == board[k][l]) {
+                        return false;
+                    }
+                }
             }
         }
     }
