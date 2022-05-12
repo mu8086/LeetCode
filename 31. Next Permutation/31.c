@@ -1,33 +1,28 @@
-void reverse(int* nums, int numsSize) {
-    for (int i=0, half=numsSize/2, last=numsSize-1, tmp; i<half; i++) {
-        tmp = nums[i];
-        nums[i] = nums[last-i];
-        nums[last-i] = tmp;
-    }
+int compare(const void* a, const void* b) {
+    return *((const int*) a) > *((const int*) b);
 }
 
-void nextPermutation(int* nums, int numsSize){
-    int dest, target, tmp;
-    
-    for (dest=numsSize-2; dest>=0; dest--) {
-        if (nums[dest] < nums[dest+1]) {
-            break;
-        }
-    }
-    
-    if (dest >= 0) {
-        for (target=numsSize-1; target>dest; target--) {
-            if (nums[dest] < nums[target]) {
-                tmp = nums[target];
-                nums[target] = nums[dest];
-                nums[dest] = tmp;
-                
-                reverse(&nums[dest+1], numsSize-1-dest);
+void sort(int* nums, int numsSize) {
+    qsort(nums, numsSize, sizeof(int), compare);
+}
+
+void swap(int* a, int* b) {
+    int tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+void nextPermutation(int* nums, int numsSize){  
+    for (int i, j=numsSize-2; j>=0; j--) {
+        for (i=numsSize-1; i>j; i--) {
+            if (nums[i] > nums[j]) {
+                swap(&nums[i], &nums[j]);
+                sort(&nums[j+1], numsSize-j-1);
                 return;
             }
         }
     }
-    
-    reverse(nums, numsSize);
+
+    sort(nums, numsSize);
     return;
 }
