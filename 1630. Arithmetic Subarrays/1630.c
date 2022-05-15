@@ -1,8 +1,8 @@
-bool isArithmeticArray(int* array, int subSize) {
+bool isArithmeticArray(int* array, int arraySize) {
     int diff=array[1]-array[0], i;
         
-    for (i=2; i<subSize; i++) {
-        if (array[i-1] + diff != array[i]) {
+    for (i=2; i<arraySize; i++) {
+        if (array[i] - array[i-1] != diff) {
             return false;
         }
     }
@@ -17,16 +17,14 @@ int compare(const void* a, const void* b) {
 bool* checkArithmeticSubarrays(int* nums, int numsSize, int* l, int lSize, int* r, int rSize, int* returnSize){
     *returnSize = lSize;
     bool* ret = (bool*) malloc(sizeof(bool) * *returnSize);
-    memset(ret, 0, sizeof(bool) * *returnSize);
-    
     int* subArray = (int*) malloc(sizeof(int) * numsSize);
-    memset(subArray, 0, sizeof(int) * numsSize);
     
-    int i, j, m=lSize, subSize;
+    int i, j, ll, m=lSize, subSize;
     for (i=0; i<m; i++) {
-        subSize = r[i]-l[i]+1;
+        ll = l[i];
+        subSize = r[i]-ll+1;
         if (subSize != 2) {
-            memcpy(subArray, &nums[l[i]], sizeof(int) * subSize);
+            memcpy(subArray, nums+ll, sizeof(int) * subSize);
             qsort(subArray, subSize, sizeof(int), compare);
             
             ret[i] = isArithmeticArray(subArray, subSize);
