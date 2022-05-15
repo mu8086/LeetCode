@@ -1,40 +1,24 @@
-void enQueue(struct TreeNode* queue[], int* size, struct TreeNode* node) {
-    queue[(*size)++] = node;
-}
-
-int deQueueAll(struct TreeNode* queue[], int* index, int* size) {
-    int sum = 0, sibling = *size - *index;
-    struct TreeNode* node = NULL;
-    
-    for (int i=0; i<sibling; i++) {
-        node = queue[(*index)++];
-        sum += node->val;
-        
-        if (node->left != NULL) {
-            enQueue(queue, size, node->left);
-        }
-        if (node->right != NULL) {
-            enQueue(queue, size, node->right);
-        }
+void getDeepestLeavesSum(struct TreeNode* root, int level, int* sum, int* max_level) {
+    if (*max_level < level) {
+        *max_level = level;
+        *sum = root->val;
+    } else if (*max_level == level) {
+        *sum += root->val;
     }
-    
-    return sum;
-}
-
-bool isEmptyQueue(struct TreeNode* queue[], int index) {
-    return queue[index] == NULL;
+        
+    if (root->left != NULL) {
+        getDeepestLeavesSum(root->left, level+1, sum, max_level);
+    }
+    if (root->right != NULL) {
+        getDeepestLeavesSum(root->right, level+1, sum, max_level);
+    }
 }
 
 int deepestLeavesSum(struct TreeNode* root){
-    if (root == NULL) {
-        return 0;
-    }
+    int sum = 0, max_level = -1;
     
-    int sum = 0, index = 0, size = 1;
-    struct TreeNode* queue[10001] = {root};
-
-    while (!isEmptyQueue(queue, index)) {
-        sum = deQueueAll(queue, &index, &size);
+    if (root != NULL) {
+        getDeepestLeavesSum(root, 0, &sum, &max_level);
     }
     
     return sum;
