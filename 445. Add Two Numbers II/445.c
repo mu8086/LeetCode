@@ -2,22 +2,23 @@ int listReverse(struct ListNode** head) {
     int node_count = 0;
     struct ListNode* tmp, *walker = *head;
     
-    if (*head != NULL) {
-        node_count++;
-    }
-    while (walker->next != NULL) {
-        tmp = walker->next;
-        walker->next = tmp->next;
-        tmp->next = *head;
-        *head = tmp;
-        node_count++;
+    if (walker != NULL) {
+        node_count = 1;
+        while (walker->next != NULL) {
+            tmp = walker->next;
+            walker->next = tmp->next;
+            tmp->next = *head;
+            *head = tmp;
+            node_count++;
+        }
     }
     
     return node_count;
 }
 
 struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
-    int carry, newVal, tmp, l1_count, l2_count;
+    int carry, newVal;
+    int l1_count, l2_count;
     struct ListNode* tmp_list = NULL, *w1, *w2, *last;
     
     l1_count = listReverse(&l1);
@@ -25,7 +26,6 @@ struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
     
     if (l1_count < l2_count) {  // let 'l1' to be the longer list
         tmp_list = l1, l1 = l2, l2 = tmp_list;
-        tmp = l1_count, l1_count = l2_count, l2_count = tmp;
     }
     
     carry = 0;
