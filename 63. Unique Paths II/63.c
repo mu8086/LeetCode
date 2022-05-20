@@ -1,70 +1,34 @@
-#define CLEAR    0
-#define OBSTACLE 1
+#define CLEAR       0
+#define OBSTACLE    1
 
-struct P {
-    int row;
-    int col;
-};
+int uniquePathsWithObstacles(int** grid, int gridSize, int* gridColSize) {
+    int i, j;
+    int last_row = gridSize-1, last_col = (*gridColSize)-1;
 
-bool isEmptyQueue(int index, int size) {
-    return index == size;
-}
-
-void enQueue(struct P queue[], int* size, struct P node) {
-    queue[(*size)++] = node;
-}
-
-void deQueueAll(struct P queue[], int* index, int* size, int** grid, int gridSize, int gridColSize) {
-    int row, col, old_size;
-    static struct P node = {};
-
-    for (old_size=*size; *index<old_size; (*index)++) {
-        row = queue[*index].row;
-        col = queue[*index].col;
-
-        if (grid[row][col] == CLEAR) {
-            if (row-1 >= 0 && grid[row-1][col] < 0) {
-                grid[row][col] += grid[row-1][col];
-            }
-            if (col-1 >= 0 && grid[row][col-1] < 0) {
-                grid[row][col] += grid[row][col-1];
-            }
-        
-            if (row+1 < gridSize && grid[row+1][col] == CLEAR) {
-                node.row = row+1, node.col = col;
-                enQueue(queue, size, node);
-            }
-            if (col+1 < gridColSize && grid[row][col+1] == CLEAR) {
-                node.row = row, node.col = col+1;
-                enQueue(queue, size, node);
-            }
-        }
-    }
-}
-
-int uniquePathsWithObstacles(int** obstacleGrid, int obstacleGridSize, int* obstacleGridColSize) {
-    int last_row = obstacleGridSize-1;
-    int last_col = (*obstacleGridColSize)-1;
-    
-    if (obstacleGrid[0][0] == OBSTACLE || obstacleGrid[last_row][last_col] == OBSTACLE) {
+    if (grid[0][0] == OBSTACLE || grid[last_row][last_col] == OBSTACLE) {
         return 0;
     }
     
-    int index = 0, size = 0;
-    obstacleGrid[0][0] = -1;
-    struct P queue[10000] = {};
-    if (obstacleGridSize > 1) {
-        queue[size].row = 1;
-        queue[size++].col = 0;
-    }
-    if (*obstacleGridColSize > 1) {
-        queue[size].row = 0;
-        queue[size++].col = 1;
+    for (i=0; i<=last_row && grid[i][0] == CLEAR; i++) {
+        grid[i][0] = -1;
     }
     
-    while (!isEmptyQueue(index, size) && obstacleGrid[last_row][last_col] == CLEAR) {
-        deQueueAll(queue, &index, &size, obstacleGrid, obstacleGridSize, *obstacleGridColSize);
+    for (i=1; i<=last_col && grid[0][i] == CLEAR; i++) {
+        grid[0][i] = -1;
     }
-
-    return -(obstacleGrid[last_row][last_col]);
+    
+    for (i=1; i<=last_row; i++) {
+        for (j=1; j<=last_col; j++) {
+            if (grid[i][j] == CLEAR) {
+                if (grid[i-1][j] != OBSTACLE) {
+                    grid[i][j] += grid[i-1][j];
+                }
+                if (grid[i][j-1] != OBSTACLE) {
+                    grid[i][j] += grid[i][j-1];
+                }
+            }
+        }
+    }
+    
+    return -(grid[last_row][last_col]);
 }
