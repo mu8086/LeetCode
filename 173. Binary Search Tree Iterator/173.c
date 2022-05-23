@@ -1,56 +1,61 @@
-#define MAX_NODE 100000
+struct MyListNode {
+    struct TreeNode* node;
+    struct MyListNode* next;
+};
 
 typedef struct {
-    int size;
-    struct TreeNode** stack;
+    struct MyListNode* head;
+    struct MyListNode* curr;
 } BSTIterator;
 
+void inorderTraversal(struct MyListNode** head, struct MyListNode** curr, struct TreeNode* root) {
+    if (root == NULL) {
+        return;
+    }
+    
+    inorderTraversal(head, curr, root->left);
+    
+    struct MyListNode* newNode = (struct MyListNode*) malloc(sizeof(struct MyListNode));
+    newNode->node = root;
+    newNode->next = NULL;
+    if (*head == NULL) {
+        *head = newNode;
+        *curr = newNode;
+    } else {
+        (*curr)->next = newNode;
+        *curr = newNode;
+    }
+    
+    inorderTraversal(head, curr, root->right);
+}
 
 BSTIterator* bSTIteratorCreate(struct TreeNode* root) {
-    BSTIterator* ret = (struct BSTIterator*) malloc(sizeof(BSTIterator));
-    
-    ret->size = 0;
-    ret->stack = (struct TreeNode**) malloc(sizeof(struct TreeNode*) * MAX_NODE);
-    
-    if (root != NULL) {
-        ret->stack[(ret->size)++] = root;
+    BSTIterator* ret = (BSTIterator*) malloc(sizeof(BSTIterator));
+    ret->head = NULL, ret->curr = NULL;
 
-        for (root = root->left; root != NULL; root = root->left) {
-            ret->stack[(ret->size)++] = root;
-        }
-    }
+    inorderTraversal(&(ret->head), &(ret->curr), root);
+    
+    ret->curr = ret->head;
     
     return ret;
 }
 
 int bSTIteratorNext(BSTIterator* obj) {
-    int ret = obj->stack[(obj->size)-1]->val;
-    
-    if (obj->stack[(obj->size)-1]->right != NULL) {
-        for (struct TreeNode* root = obj->stack[(obj->size)-1]->right; root != NULL; root = root->left) {
-            obj->stack[(obj->size)++] = root;
-        }
-    } else {
-        int height;
-
-        for (height=(obj->size)-1; height>=1; height--) {
-            if (obj->stack[height] != obj->stack[height-1]->right) {
-                break;
-            }
-        }
-        obj->size = height;
-    }
-    
+    int ret = obj->curr->node->val;
+    obj->curr = obj->curr->next;
     return ret;
 }
 
 bool bSTIteratorHasNext(BSTIterator* obj) {
-    return obj->size > 0;
+    return obj->curr != NULL;
 }
 
 void bSTIteratorFree(BSTIterator* obj) {
     if (obj != NULL) {
-        free(obj->stack);
+        for (struct MyListNode* walker = obj->head, *next; walker != NULL; walker = next) {
+            next = walker->next;
+            free(walker);
+        }
         free(obj);
     }
 }
