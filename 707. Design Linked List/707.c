@@ -103,5 +103,13 @@ void myLinkedListDeleteAtIndex(MyLinkedList* obj, int index) {
 }
 
 void myLinkedListFree(MyLinkedList* obj) {
+    struct Node* tmp;
+    
+    while (obj->head != NULL) {
+        tmp = obj->head;
+        obj->head = obj->head->next;
+        free(tmp);
+    }
+    
     free(obj);
 }
