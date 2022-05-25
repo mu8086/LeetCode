@@ -4,14 +4,11 @@ int minSubArrayLen(int target, int* nums, int numsSize){
     int ret = INIT_VAL;
     int front, end, count;
 
-    for (front=0, end=0, count=0; ; ) {
-        if (count < target) {
-            if (end >= numsSize) {
-                break;
-            }
-            count += nums[end++];
-        } else if (count >= target) {
-            ret = (ret < end-front) ? ret : end-front;
+    for (front=0, end=0, count=0; end<numsSize; end++) {
+        count += nums[end];
+        
+        while (count >= target) {
+            ret = (ret < end-front+1) ? ret : end-front+1;
             count -= nums[front++];
         }
     }
