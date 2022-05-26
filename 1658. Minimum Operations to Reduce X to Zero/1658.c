@@ -1,30 +1,38 @@
-#define INIT_VAL 100001
+#define INVALID     -1
+#define INIT_VAL    100001
 
-int minOperations(int* nums, int numsSize, int x){
-    int ret = INIT_VAL, operations;
-    int count, last_index = numsSize-1;
-    int front_end, back_begin;
+int minOperations(int* nums, int numsSize, int x) {
+    int ret = INIT_VAL;
+    int sum, other_sum;
+    int left, right, count, tmp;
     
-    for (front_end=0, count=0; front_end<numsSize && count<x; front_end++) {
-        count += nums[front_end];
+    for (tmp = 0, sum = 0; tmp < numsSize; tmp++) {
+        sum += nums[tmp];
     }
-    if (count == x) {
-        ret = front_end;
-    } else if (count<x && front_end == numsSize) { // x > sum of array
-        return -1;
+    if (sum < x) {
+        return INVALID;
+    } else if (sum == x) {
+        return numsSize;
     }
 
-    for (front_end--, back_begin=last_index; front_end>=0; front_end--) {
-        count -= nums[front_end];
+    // sum = x + other_sum
+    // use other_sum to find out longest subarray
+    // minimum operations = numsSize - length of longest subarray
+    other_sum = sum - x;
+    
+    left = right = count = 0;
+    while (right < numsSize) {
+        count += nums[right++];
         
-        while (count < x && back_begin >= 0) {
-            count += nums[back_begin--];
+        while (count > other_sum) {
+            count -= nums[left++];;
         }
-        if (count == x) {
-            operations = (front_end) + (last_index-back_begin);
-            ret = (operations < ret) ? operations : ret;
+        
+        if (count == other_sum) {
+            tmp = numsSize-(right-left);
+            ret = (tmp < ret) ? tmp : ret;
         }
     }
 
-    return ret != INIT_VAL ? ret : -1;
+    return ret != INIT_VAL ? ret : INVALID;
 }
