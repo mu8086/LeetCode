@@ -9,7 +9,7 @@ int lengthOfLongestSubstring(char * s) {
             max = (len > max) ? len : max;
             begin = lastIndex[s[end]];
         }
-        // indicate the new begin, if found this character later
+        // '+1' indicate the new begin, if found this character later
         lastIndex[s[end]] = end+1;
     }
     len = end - begin;
