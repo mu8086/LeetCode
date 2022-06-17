@@ -1,6 +1,6 @@
-#define ONE     1
-#define TWO     2
-#define THREE   0
+#define THREE   0   // camera top
+#define TWO     2   // camera
+#define ONE     1   // camera bottom
 
 static inline int getType(int val) {
     return (val != 0) ? val % 3 : 0;
