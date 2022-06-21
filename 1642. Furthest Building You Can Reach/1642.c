@@ -1,95 +1,75 @@
 #define MAX_LADDER_SIZE 100000
 
-void popAndInsert(int list[], int size, int value) {
+int searchIndex(int list[], int size, int value) {
+    if (size == 0) {
+        return 0;
+    }
+    
+    int ret;
     int left = 0, right = size-1;
     int half, f_half, halfIndex;
-    static int tmp[MAX_LADDER_SIZE];
     
-    list[0] = 0;    // reset to 0 for while-loop
+    while (true) {
+        halfIndex = (left + right) / 2;
+        half = list[halfIndex];
+        if (left == right) {
+            ret = (value < list[halfIndex]) ? halfIndex : halfIndex+1;
+            break;
+        }
+        f_half = list[halfIndex-1];
+        
+        if (f_half <= value && value < half) {
+            ret = halfIndex;
+            break;
+        } else if (half > value) {
+            right = halfIndex-1;
+        } else if (half <= value) {
+            left = halfIndex+1;
+        }
+    }
     
+    return ret;
+}
+
+void popAndInsert(int list[], int size, int value) {
     if (size == 1 || value < list[1]) {
         list[0] = value;
         return;
     }
     
-    if (value > list[size-1]) {
-        memcpy(tmp, &list[1], sizeof(int) * (size-1));
-        memcpy(list, tmp, sizeof(int) * (size-1));
-        list[size] = value;
-        return;
+    static int tmp[MAX_LADDER_SIZE];
+    int index = searchIndex(&list[1], size-1, value);
+    int copySize = sizeof(int) * index;
+    
+    memcpy(tmp, &list[1], copySize);
+    memcpy(list, tmp, copySize);
+    
+    list[index] = value;
+}
+
+void insertValueToListInIndex(int list[], int size, int index, int value) {
+    static int tmp[MAX_LADDER_SIZE];
+    
+    if (size != index) {
+        int copySize = sizeof(int) * (size - index);
+
+        memcpy(tmp, &list[index], copySize);
+        memcpy(&list[index+1], tmp, copySize);
     }
     
-    if (left <= right) {
-        while (true) {
-            halfIndex = (left + right) / 2;
-            half    = list[halfIndex];
-            f_half  = (halfIndex > 0) ? list[halfIndex-1] : 0;
-
-            if (f_half <= value && value < half) {
-                memcpy(tmp, &list[1], sizeof(int) * (halfIndex-1));
-                memcpy(list, tmp, sizeof(int) * (halfIndex-1));
-                list[halfIndex-1] = value;
-                break;
-            } else if (left == right) {
-                memcpy(tmp, &list[1], sizeof(int) * halfIndex);
-                memcpy(list, tmp, sizeof(int) * halfIndex);
-                list[halfIndex] = value;
-                break;
-            } else if (half <= value) {
-                left = halfIndex+1;
-            } else if (half > value) {
-                right = halfIndex-1;
-            }
-        }
-    }
+    list[index] = value;
 }
 
 void insert(int list[], int size, int value) {
-    int left = 0, right = size-1;
-    int half, f_half, halfIndex;
-    static int tmp[MAX_LADDER_SIZE];
-
-    if (size == 0 || value < list[0]) {
-        for (int i = size-1; i >= 0; i--) {
-            list[i+1] = list[i];
-        }
-        list[0] = value;
-        return;
-    }
-    
-    if (value > list[size-1]) {
-        list[size] = value;
-        return;
-    }
-    
-    while (true) {
-        halfIndex = (left + right) / 2;
-        half    = list[halfIndex];
-        f_half  = (halfIndex > 0) ? list[halfIndex-1] : 0;
-
-        if (f_half <= value && value < half) {
-            memcpy(tmp, &list[halfIndex], sizeof(int) * (size-halfIndex));
-            memcpy(&list[halfIndex+1], tmp, sizeof(int) * (size-halfIndex));
-            list[halfIndex] = value;
-            break;
-        } else if (left == right) {
-            memcpy(tmp, &list[1], sizeof(int) * halfIndex);
-            memcpy(list, tmp, sizeof(int) * halfIndex);
-            list[halfIndex] = value;
-            break;
-        } else if (half <= value) {
-            left = halfIndex+1;
-        } else if (half > value) {
-            right = halfIndex-1;
-        }
-    }
+    int index = searchIndex(list, size, value);
+    insertValueToListInIndex(list, size, index, value);
 }
 
 int furthestBuilding(int* heights, int heightsSize, int bricks, int ladders) {
     int i, diff;
     static int inListSize = 0, listSize = sizeof(int) * MAX_LADDER_SIZE;
     static int list[MAX_LADDER_SIZE];
-    
+
     if (ladders != 0) {
         int min;
         inListSize = 0;
