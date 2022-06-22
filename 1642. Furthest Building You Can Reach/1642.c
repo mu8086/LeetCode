@@ -16,7 +16,7 @@ int searchIndex(int list[], int size, int value) {
             ret = (value < list[halfIndex]) ? halfIndex : halfIndex+1;
             break;
         }
-        f_half = list[halfIndex-1];
+        f_half = (halfIndex > 0) ? list[halfIndex-1] : 0;
         
         if (f_half <= value && value < half) {
             ret = halfIndex;
@@ -31,13 +31,12 @@ int searchIndex(int list[], int size, int value) {
     return ret;
 }
 
-void popAndInsert(int list[], int size, int value) {
+void popAndInsert(int list[], int size, int value, int tmp[]) {
     if (size == 1 || value < list[1]) {
         list[0] = value;
         return;
     }
-    
-    static int tmp[MAX_LADDER_SIZE];
+
     int index = searchIndex(&list[1], size-1, value);
     int copySize = sizeof(int) * index;
     
@@ -47,8 +46,8 @@ void popAndInsert(int list[], int size, int value) {
     list[index] = value;
 }
 
-void insertValueToListInIndex(int list[], int size, int index, int value) {
-    static int tmp[MAX_LADDER_SIZE];
+void insert(int list[], int size, int value, int tmp[]) {
+    int index = searchIndex(list, size, value);
     
     if (size != index) {
         int copySize = sizeof(int) * (size - index);
@@ -60,34 +59,28 @@ void insertValueToListInIndex(int list[], int size, int index, int value) {
     list[index] = value;
 }
 
-void insert(int list[], int size, int value) {
-    int index = searchIndex(list, size, value);
-    insertValueToListInIndex(list, size, index, value);
-}
-
 int furthestBuilding(int* heights, int heightsSize, int bricks, int ladders) {
     int i, diff;
     static int inListSize = 0, listSize = sizeof(int) * MAX_LADDER_SIZE;
-    static int list[MAX_LADDER_SIZE];
+    static int list[MAX_LADDER_SIZE], tmp[MAX_LADDER_SIZE];
 
     if (ladders != 0) {
         int min;
         inListSize = 0;
-        memset(list, 0, listSize);
         
         for (i = 1; i < heightsSize; ++i) {
             if (heights[i] > heights[i-1]) {
                 diff = heights[i] - heights[i-1];
                 if (ladders > 0) {
                     --ladders;
-                    insert(list, inListSize, diff);
+                    insert(list, inListSize, diff, tmp);
                     ++inListSize;
                     continue;
                 }
                 
                 min = list[0];
                 if (diff > min) {
-                    popAndInsert(list, inListSize, diff);
+                    popAndInsert(list, inListSize, diff, tmp);
                     bricks -= min;
                 } else {
                     bricks -= diff;
