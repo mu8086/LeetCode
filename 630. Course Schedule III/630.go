@@ -4,18 +4,14 @@ import (
     "sort"
 )
 
-type Item struct {
-    Value       int
-}
-
-type PriorityQueue []*Item
+type PriorityQueue []int
 
 func (pq PriorityQueue) Len() int {
     return len(pq)
 }
 
 func (pq PriorityQueue) Less(i, j int) bool {
-    return pq[i].Value > pq[j].Value
+    return pq[i] > pq[j]
 }
 
 func (pq PriorityQueue) Swap(i, j int) {
@@ -23,8 +19,7 @@ func (pq PriorityQueue) Swap(i, j int) {
 }
 
 func (pq *PriorityQueue) Push(x interface{}) {
-    item := x.(*Item)
-    *pq = append(*pq, item)
+    *pq = append(*pq, x.(int))
 }
 
 func (pq *PriorityQueue) Pop() interface{} {
@@ -33,7 +28,6 @@ func (pq *PriorityQueue) Pop() interface{} {
     
     item := old[n-1]    // heap.Pop() move [0] -> [n-1], then call h.Pop(), so use [n-1] here
     
-    old[n-1] = nil
     *pq = old[0 : n-1]
     return item
 }
@@ -48,15 +42,11 @@ func scheduleCourse(courses [][]int) int {
     
     time := 0
     for _, v := range courses {
-        item := &Item{
-            Value: v[0],
-        }
-        
         time += v[0]
-        heap.Push(&pq, item)
+        heap.Push(&pq, v[0])
         
         if time > v[1] {
-            time -= heap.Pop(&pq).(*Item).Value
+            time -= heap.Pop(&pq).(int)
         }
     }
     
