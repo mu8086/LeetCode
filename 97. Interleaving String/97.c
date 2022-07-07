@@ -18,24 +18,6 @@ void matchChar(bool **table, char *s1, char *s2, char c3, int row, int col) {
     }
 }
 
-bool canGetToEnd(bool **table, int max_row, int max_col, int row, int col) {
-    if (table[row][col] == false) {
-        return false;
-    } else if (row == max_row && col == max_col) {
-        return true;
-    } else {
-        bool row_res = false, col_res = false;
-        
-        if (row+1 <= max_row) {
-            row_res = canGetToEnd(table, max_row, max_col, row+1, col);
-        }
-        if (col+1 <= max_col) {
-            col_res = canGetToEnd(table, max_row, max_col, row, col+1);
-        }
-        return row_res | col_res;
-    }
-}
-
 bool isInterleave(char * s1, char * s2, char * s3) {
     int i, j;
     int len_1 = strlen(s1), len_2 = strlen(s2), len_3 = strlen(s3);
@@ -53,11 +35,11 @@ bool isInterleave(char * s1, char * s2, char * s3) {
     
     table[0][0] = true;
     for (i=0; i<len_1; ++i) {
-        table[i+1][0] = (table[i][0] == true && s1[i] == s3[i]) ? true : false;
+        table[i+1][0] = (table[i][0] == true && s1[i] == s3[i]);
     }
     
     for (i=0; i<len_2; ++i) {
-        table[0][i+1] = (table[0][i] == true && s2[i] == s3[i]) ? true : false;
+        table[0][i+1] = (table[0][i] == true && s2[i] == s3[i]);
     }
     
     for (i=1; i<=len_1; ++i) {
