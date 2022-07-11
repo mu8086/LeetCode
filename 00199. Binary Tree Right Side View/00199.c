@@ -6,12 +6,9 @@ void traversal(struct TreeNode *root, int depth, char tmp[]) {
         return;
     }
     
-    if (tmp[depth] == INIT_VAL) {
-        tmp[depth] = root->val;
-    }
-    
-    traversal(root->right, depth+1, tmp);
+    tmp[depth] = root->val;
     traversal(root->left,  depth+1, tmp);
+    traversal(root->right, depth+1, tmp);
 }
 
 int * rightSideView(struct TreeNode *root, int *returnSize) {
