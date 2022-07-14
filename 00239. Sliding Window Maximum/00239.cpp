@@ -10,24 +10,21 @@ public:
             return nums;
         }
         
-        vector<int> ret;
-        ret.reserve(nums.size() - k + 1);
+        vector<int> ret(nums.size() - k + 1);
         
         deque<int> dq;
 
-        for (int i = 0, numSize = nums.size(); i < numSize; ++i) {
-            if (i > k-2) {
-                while (!dq.empty() && dq.front() <= i-k) {
-                    dq.pop_front();
-                }
+        for (int i = 0, j = 1-k, numSize = nums.size(); i < numSize; ++i, ++j) {
+            while (!dq.empty() && dq.front() <= i-k) {
+                dq.pop_front();
             }
-            while (!dq.empty() && nums[dq.back()] < nums[i]) {
+            while (!dq.empty() && nums[dq.back()] <= nums[i]) {
                 dq.pop_back();
             }
             dq.push_back(i);
             
-            if (i >= k-1) {
-                ret.push_back(nums[dq.front()]);
+            if (j >= 0) {
+                ret[j] = nums[dq.front()];
             }
         }
         
