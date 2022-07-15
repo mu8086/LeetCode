@@ -1,31 +1,12 @@
-#define MAX_SIZE    10000
-
-void inorder(struct TreeNode *root, int nums[], int *index) {
+bool helper(struct TreeNode *root, struct TreeNode *min, struct TreeNode *max) {
     if (root == NULL) {
-        return;
+        return true;
+    } else if ((min != NULL && root->val <= min->val) || (max != NULL && root->val >= max->val)) {
+        return false;
     }
-    
-    inorder(root->left, nums, index);
-    nums[++(*index)] = root->val;
-    inorder(root->right, nums, index);
+    return helper(root->left, min, root) && helper(root->right, root, max);
 }
 
-bool verify(int nums[], int lastIndex) {
-    for (int i = 1; i <= lastIndex; ++i) {
-        if (nums[i-1] >= nums[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool isValidBST(struct TreeNode *root){
-    static int nums[MAX_SIZE];
-    static int index, size = sizeof(int) * MAX_SIZE;
-    index = -1;
-    memset(nums, 0, size);
-    
-    inorder(root, nums, &index);
-    
-    return verify(nums, index);
+bool isValidBST(struct TreeNode *root) {
+    return helper(root, NULL, NULL);
 }
