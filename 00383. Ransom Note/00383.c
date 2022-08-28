@@ -8,11 +8,13 @@ bool canConstruct(char *ransomNote, char *magazine) {
     }
     
     for (i = 0, len = strlen(ransomNote); i < len; ++i) {
-        if (freq[ransomNote[i] - 'a'] == 0) {
+        --freq[ransomNote[i] - 'a'];
+    }
+    
+    for (i = 0; i < ALPHABET_SIZE; ++i) {
+        if (freq[i] < 0) {
             return false;
         }
-        
-        --freq[ransomNote[i] - 'a'];
     }
     
     return true;
