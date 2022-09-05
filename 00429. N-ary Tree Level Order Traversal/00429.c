@@ -1,51 +1,62 @@
-void enQueue(struct Node* queue[], int* size_q, struct Node* node) {
-    queue[(*size_q)++] = node;
+#define MAX_LEVEL_SIZE  1000
+#define MAX_NODE_SIZE   10000
+
+bool isEmptyQueue(int size, int index) {
+    return size-1 == index;
 }
 
-void deQueueAll(struct Node* queue[], int* index_q, int* size_q, int** ret, int* returnSize, int* returnColumnSizes) {
-    int i, j, siblings = *size_q - *index_q;
-    struct Node* node;
+void enQueue(struct Node *queue[], int *qSize, struct Node *node) {
+    queue[(*qSize)++] = node;
+}
 
-    returnColumnSizes[*returnSize] = siblings;
-    ret[*returnSize] = (int*) malloc(sizeof(int) * siblings);
-    
-    for (i=0; i<siblings; i++) {
-        node = queue[(*index_q)++];
-        ret[*returnSize][i] = node->val;
-        
-        for (j=0; j<node->numChildren; j++) {
-            enQueue(queue, size_q, (node->children)[j]);
+void deQueueAll(struct Node *queue[], int *qSize, int *qIndex, int *levelTable[], int levelSize[], int level) {
+    int i, j, jSize, k, oldSize = *qSize;
+
+    levelSize[level] = oldSize - ((*qIndex)+1);
+    int *tmp = levelTable[level] = (int *) malloc(sizeof(int) * levelSize[level]);
+
+    for (i = (*qIndex)+1, k = 0; i < oldSize; ++i, ++k) {
+        tmp[k] = queue[i]->val;
+
+        for (j = 0, jSize = queue[i]->numChildren; j < jSize; ++j) {
+            enQueue(queue, qSize, queue[i]->children[j]);
         }
     }
-    
-    (*returnSize)++;
+
+    *qIndex = oldSize-1;
 }
 
-bool isEmptyQueue(struct Node* queue[], int index_q) {
-    return queue[index_q] == NULL;
-}
-
-int** levelOrder(struct Node* root, int* returnSize, int** returnColumnSizes) {
+int ** levelOrder(struct Node *root, int *returnSize, int **returnColumnSizes) {
     *returnSize = 0;
-    
+    *returnColumnSizes = NULL;
+
     if (root == NULL) {
-        *returnColumnSizes = NULL;
         return NULL;
     }
-    
-    int max_height = 1000;
-    int** ret = (int**) malloc(sizeof(int*) * max_height);
-    memset(ret, 0, sizeof(int*) * max_height);
-    
-    *returnColumnSizes = (int*) malloc(sizeof(int) * max_height);
-    memset(*returnColumnSizes, 0, sizeof(int) * max_height);
-        
-    int index_q = 0, size_q = 1;
-    struct Node* queue[10000] = {root};
-        
-    while (!isEmptyQueue(queue, index_q)) {
-        deQueueAll(queue, &index_q, &size_q, ret, returnSize, *returnColumnSizes);
+
+    int *levelTable[MAX_LEVEL_SIZE] = {};
+    int levelSize[MAX_LEVEL_SIZE] = {};
+    int i, **ans = NULL;
+
+    int qSize = 0, qIndex = -1;
+    struct Node *queue[MAX_NODE_SIZE] = {};
+
+    enQueue(queue, &qSize, root);
+
+    while (!isEmptyQueue(qSize, qIndex)) {
+        deQueueAll(queue, &qSize, &qIndex, levelTable, levelSize, *returnSize);
+        ++(*returnSize);
     }
-    
-    return ret;
+
+    if (*returnSize != 0) {
+        ans = (int **) malloc(sizeof(int *) * *returnSize);
+        memcpy(ans, levelTable, sizeof(int *) * *returnSize);
+
+        *returnColumnSizes = (int *) malloc(sizeof(int) * *returnSize);
+        for (i = (*returnSize)-1; i >= 0; --i) {
+            (*returnColumnSizes)[i] = levelSize[i];
+        }
+    }
+
+    return ans;
 }
