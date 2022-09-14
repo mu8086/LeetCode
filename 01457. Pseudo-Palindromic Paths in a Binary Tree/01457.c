@@ -1,29 +1,19 @@
-#define MAX_SIZE    10
-
-void traversal(struct TreeNode *root, int map[], int odd_count, int *ans) {
-    if (root != NULL) {
-        ++(map[root->val]);
-        odd_count += (map[root->val] % 2 == 1) ? 1 : -1;
+int traversal(struct TreeNode *root, int bitmap) {
+    if (root == NULL) {
+        return 0;
+    } else {
+        // use bitmap to record which val is odd frequency
+        bitmap ^= (1 << root->val);
         
-        if (root->left != NULL || root->right != NULL) {
-            traversal(root->left,  map, odd_count, ans);
-            traversal(root->right, map, odd_count, ans);
-        } else {
-            if (odd_count <= 1) {
-                ++(*ans);
-            }
+        if (root->left == NULL && root->right == NULL) {
+            // odd frequency in the bitmap, must be 0 or 1 count to form a Pseudo-Palindromic Paths
+            return (bitmap == 0 || ((bitmap & (bitmap-1)) == 0)) ? 1 : 0;
         }
-        
-        --(map[root->val]);
-        // no need to do this, because the odd_count of parent is correct for itself
-        // odd_count += (map[root->val] % 2 == 1) ? 1 : -1;
     }
+    
+    return traversal(root->left, bitmap) + traversal(root->right, bitmap);
 }
 
 int pseudoPalindromicPaths (struct TreeNode *root) {
-    int ans = 0, map[MAX_SIZE] = {};
-    
-    traversal(root, map, 0, &ans);
-    
-    return ans;
+    return traversal(root, 0);
 }
