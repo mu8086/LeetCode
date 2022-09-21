@@ -1,32 +1,49 @@
-int bruteCalArea(int* height, int heightSize) {
-    int result=0, local=0;
+int ** int2dArray(int row, int col) {
+    int **ret = (int **) malloc(sizeof(int *) * row + sizeof(int) * row * col);
+    int *first = (int *)(ret + row);
     
-    for (int i=1; i<heightSize; i++) {
-        local = calArea(getLowerHeight(height[0], height[i]), i);
-        result = result > local ? result : local;
+    for (int i = 0; i < row; ++i) {
+        ret[i] = first + i * col;
     }
     
-    return result;
+    return ret;
 }
 
-int calArea(int height, int width) {
-    return height * width;
+int compare(const void *aa, const void *bb) {
+    int *a = *(int **)aa, *b = *(int **)bb;
+    return *b - *a;
 }
 
-int getLowerHeight(int a, int b)
-{
-    return a<b ? a : b ;
-}
+int maxArea(int *height, int heightSize) {
+    int i, left, right, max = 0;
+    int h, idx, sum;
+    int **map = int2dArray(heightSize, 2);  // map[i][0]: height, map[i][1] = idx
+    
+    for (i = 0; i < heightSize; ++i) {
+        map[i][0] = height[i];
+        map[i][1] = i;
+    }
+    
+    qsort(map, heightSize, sizeof(int) * 2, compare);
+    
+    left = right = map[0][1];
+    for (i = 1; i < heightSize; ++i) {
+        h = map[i][0];
+        idx = map[i][1];
 
-int maxArea(int* height, int heightSize){
-    if (heightSize == 2) {
-        return calArea(getLowerHeight(height[0], height[1]), 1);
-    } else {
-        int subResult = maxArea(&height[1], heightSize-1);
-        int bruteResult = 0;
-        if (height[0] * (heightSize-1) > subResult) {
-            bruteResult = bruteCalArea(height, heightSize);
+        if (left > idx) {
+            left = idx;
         }
-        return subResult>bruteResult ? subResult : bruteResult ;
+        if (right < idx) {
+            right = idx;
+        }
+        
+        sum = h * fmax(idx - left, right - idx);
+        if (max < sum) {
+            max = sum;
+        }
     }
+    
+    free(map);
+    return max;
 }
