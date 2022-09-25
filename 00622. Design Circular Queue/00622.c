@@ -1,59 +1,40 @@
-struct Node {
-    int val;
-    struct Node* next;
-};
+#define UNSET   -1
+
 
 typedef struct {
+    int *val;
     int size;
-    struct Node** queue;
-    int frontIndex;
-    int rearIndex;
+    int front;
+    int rear;
 } MyCircularQueue;
 
 
 MyCircularQueue* myCircularQueueCreate(int k) {
-    MyCircularQueue* ret = (MyCircularQueue*) malloc(sizeof(MyCircularQueue));
-    ret->size = k;
-    ret->queue = (struct Node**) malloc(sizeof(struct Node*) * k);
-    memset(ret->queue, 0, sizeof(struct Node*) * k);
-    ret->frontIndex = 0;
-    ret->rearIndex = 0;
-    
-    return ret;
+    MyCircularQueue *queue = (MyCircularQueue *) malloc(sizeof(MyCircularQueue));
+    int *val = (int *) malloc(sizeof(int) * k);
+    memset(val, UNSET, sizeof(int) * k);
+
+    *queue = (MyCircularQueue){ .val = val, .size = k, .front = 0, .rear = 0 };
+
+    return queue;
 }
 
 bool myCircularQueueIsEmpty(MyCircularQueue* obj) {
-    if (obj == NULL) {
-        return true;
-    }
-    return obj->queue[obj->rearIndex] == NULL;
-}
-
-int getNextIndex(MyCircularQueue* obj, int index) {
-    return (index+1) % obj->size;
+    return obj->front == obj->rear && obj->val[obj->front] == UNSET;
 }
 
 bool myCircularQueueIsFull(MyCircularQueue* obj) {
-    return obj->queue[obj->rearIndex] != NULL && getNextIndex(obj, obj->rearIndex) == obj->frontIndex;
+    return obj->front == obj->rear && obj->val[obj->front] != UNSET;
 }
 
 bool myCircularQueueEnQueue(MyCircularQueue* obj, int value) {
     if (myCircularQueueIsFull(obj)) {
         return false;
     }
-    
-    struct Node* node = (struct Node*) malloc(sizeof(struct Node));
-    node->val = value;
-    node->next = NULL;
-    
-    if (obj->queue[obj->rearIndex] != NULL) {
-        obj->queue[obj->rearIndex]->next = node;
-        obj->rearIndex = getNextIndex(obj, obj->rearIndex);
-        obj->queue[obj->rearIndex] = node;
-    } else {    // no node in queue
-        obj->queue[obj->rearIndex] = node;
-    }
-    
+
+    obj->val[obj->rear] = value;
+    obj->rear = (obj->rear + 1) % obj->size;
+
     return true;
 }
 
@@ -61,27 +42,25 @@ bool myCircularQueueDeQueue(MyCircularQueue* obj) {
     if (myCircularQueueIsEmpty(obj)) {
         return false;
     }
-    
-    if (obj->frontIndex == obj->rearIndex) {    // only one node in queue
-        obj->rearIndex = getNextIndex(obj, obj->rearIndex);
-    }
-    
-    free(obj->queue[obj->frontIndex]);
-    obj->queue[obj->frontIndex] = NULL;
-    obj->frontIndex = getNextIndex(obj, obj->frontIndex);
-    
+
+    obj->val[obj->front] = UNSET;
+    obj->front = (obj->front + 1) % obj->size;
+
     return true;
 }
 
-int myCircularQueueFront(MyCircularQueue* obj) {
-    return !myCircularQueueIsEmpty(obj) ? obj->queue[obj->frontIndex]->val : -1;
+int myCircularQueueFront(MyCircularQueue *obj) {
+    return myCircularQueueIsEmpty(obj) ? -1 : obj->val[obj->front];
 }
 
-int myCircularQueueRear(MyCircularQueue* obj) {
-    return !myCircularQueueIsEmpty(obj) ? obj->queue[obj->rearIndex]->val : -1;
+int myCircularQueueRear(MyCircularQueue *obj) {
+    int idx = (obj->rear + obj->size - 1) % obj->size;
+    return myCircularQueueIsEmpty(obj) ? -1 : obj->val[idx];
 }
 
 void myCircularQueueFree(MyCircularQueue* obj) {
-    free(obj->queue);
-    free(obj);
+    if (obj != NULL) {
+        free(obj->val);
+        free(obj);
+    }
 }
