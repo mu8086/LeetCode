@@ -1,44 +1,31 @@
 // https://leetcode.com/problems/top-k-frequent-words
 
-class Solution {
-public:
-    static bool cmp(pair<string, int>& a, pair<string, int>& b) {
-        if (a.second == b.second) {
+struct Compare {
+    bool operator() (pair<string, int> a, pair<string, int> b) {
+        if (a.second == b.second)
             return a.first > b.first;
-        }
         return a.second < b.second;
     }
+};
 
-    vector<pair<string, int>> sort(map<string, int>& m) {
-        vector<pair<string, int>> v;
-
-        for (auto& it : m) {
-            v.push_back(it);
-        }
-
-        std::sort(v.begin(), v.end(), cmp);
-
-        return v;
-    }
-
+class Solution {
+public:
     vector<string> topKFrequent(vector<string>& words, int k) {
-        std::map<std::string, int> m;
-        std::map<std::string, int>::iterator it;
+        vector<string> ans;
+        unordered_map<string, int> m;
 
-        for (auto & word : words) {
-            if ((it = m.find(word)) == m.end()) {
-                // not found;
-                m.insert(std::pair<std::string, int>(word, 1));
-            } else {
-                ++(it->second);
-            }
+        for (int i = 0; i < words.size(); ++i) {
+            ++m[words[i]];
         }
 
-        auto v = sort(m);
-        vector<string> ans;
+        priority_queue<pair<string, int>, vector<pair<string, int>>, Compare> q;
+        for (auto pair : m) {
+            q.push({pair.first, pair.second});
+        }
 
-        for (auto it2 = v.rbegin(); k > 0 && it2 != v.rend(); --k, ++it2) {
-            ans.push_back(it2->first);
+        while (k--) {
+            ans.push_back(q.top().first);
+            q.pop();
         }
 
         return ans;
