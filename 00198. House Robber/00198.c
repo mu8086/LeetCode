@@ -1,35 +1,14 @@
-#define MAX_SIZE    100
-#define INIT_VAL    -1
+// https://leetcode.com/problems/house-robber/
 
-int helper(int *nums, int numsSize, int index, int dp[]) {
-    if (dp[index] == INIT_VAL) {
-        int max;
-
-        if (numsSize == 1) {
-            max = nums[index];
-        } else if (numsSize == 2) {
-            max = (nums[index] > nums[index+1])             ? nums[index]   : nums[index+1];
-        } else if (numsSize == 3) {
-            max = (max >= nums[index+1])                    ? max           : nums[index+1];
-            max = (max >= nums[index] + nums[index+2])      ? max           : nums[index] + nums[index+2];
-        } else if (numsSize == 4) {
-            max = (max >= nums[index] + nums[index+2])      ? max           : nums[index] + nums[index+2];
-            max = (max >= nums[index] + nums[index+3])      ? max           : nums[index] + nums[index+3];
-            max = (max >= nums[index+1] + nums[index+3])    ? max           : nums[index+1] + nums[index+3];
-        } else {
-            int a = nums[index] + helper(nums, numsSize-2, index+2, dp);
-            int b = nums[index+1] + helper(nums, numsSize-3, index+3, dp);
-            max = (a > b) ? a : b;
+int rob(int *nums, int size) {
+    if (size == 1) {
+        return nums[0];
+    } else if (size > 2) {
+        nums[2] += nums[0];
+        for (int i = 3; i < size; ++i) {
+            nums[i] += fmax(nums[i-3], nums[i-2]);
         }
-        dp[index] = max;
     }
-    
-    return dp[index];
-}
 
-int rob(int *nums, int numsSize) {
-    static int dp[MAX_SIZE], size = sizeof(int) * MAX_SIZE;
-    memset(dp, INIT_VAL, size);
-    
-    return helper(nums, numsSize, 0, dp);
+    return fmax(nums[size-2], nums[size-1]);
 }
