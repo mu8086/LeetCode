@@ -1,25 +1,24 @@
 // https://leetcode.com/problems/minimum-absolute-difference-in-bst
 
-func helper(root *TreeNode, parent int, min *int) {
+func helper(root *TreeNode, low, upper int, min *int) {
     if root == nil {
-        return 
+        return
     }
-    val := root.Val
-    helper(root.Left, val, min)
-    helper(root.Right, val, min)
-    
-    diff := parent - val
-    if diff < 0 {
-        diff = -diff
+
+    diff, diff2 := root.Val - low, upper - root.Val
+    if diff > diff2 {
+        diff = diff2
     }
-    
-    if *min > diff {
+    if *min > diff && diff > 0 {
         *min = diff
     }
+
+    helper(root.Left, low, root.Val, min)
+    helper(root.Right, root.Val, upper, min)
 }
 
 func getMinimumDifference(root *TreeNode) int {
-    min := 10000000
-    helper(root, min, &min)
+    min := math.MaxInt
+    helper(root, -1000000, 1000000, &min)
     return min
 }
