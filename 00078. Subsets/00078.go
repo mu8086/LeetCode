@@ -1,14 +1,14 @@
 // https://leetcode.com/problems/subsets
 
-func subsets(nums []int) [][]int {
-    ans := [][]int{[]int{}}
+func subsets(nums []int) (ans [][]int) {
+    ans = append(ans, []int{})
 
-    for i, lenNums := 0, len(nums); i < lenNums; i++ {
-        for j, lenAns := 0, len(ans); j < lenAns; j++ {
-            tmp := make([]int, len(ans[j]))
-            copy(tmp, ans[j])
+    for _, num := range nums {
+        for idx := range ans {
+            tmp := make([]int, len(ans[idx]))
+            copy(tmp, ans[idx])
 
-            tmp = append(tmp, nums[i])
+            tmp = append(tmp, num)
 
             ans = append(ans, tmp)
         }
