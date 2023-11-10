@@ -23,13 +23,33 @@ func depth(n, root int) (d int) {
     return d
 }
 
-func cycleLengthQueries(n int, queries [][]int) []int {
+func _cycleLengthQueries(n int, queries [][]int) []int {
     l := len(queries)
     ans := make([]int, l, l)
 
     for i := 0; i < l; i++ {
         root := getCommonRoot(queries[i][0], queries[i][1])
         ans[i] = depth(queries[i][0], root) + depth(queries[i][1], root) + 1
+    }
+
+    return ans
+}
+
+// others' submission
+func cycleLengthQueries(n int, queries [][]int) []int {
+    l := len(queries)
+    ans := make([]int, l, l)
+
+    for i := 0; i < l; i++ {
+        count := 1
+        for a, b := queries[i][0], queries[i][1]; a != b; count++ {
+            if a > b {
+                a >>= 1
+            } else {
+                b >>= 1
+            }
+        }
+        ans[i] = count
     }
 
     return ans
