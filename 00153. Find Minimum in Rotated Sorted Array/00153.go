@@ -3,6 +3,23 @@
 func findMin(nums []int) int {
     left, right := 0, len(nums)-1
 
+    for left < right && nums[left] > nums[right] {
+        mid := left + (right-left)>>1
+
+        if nums[mid] >= nums[left] {
+            left = mid+1
+        } else {
+            right = mid
+        }
+    }
+
+    return nums[left]
+}
+
+// recursive
+func _findMin(nums []int) int {
+    left, right := 0, len(nums)-1
+
     if nums[left] <= nums[right] {
         return nums[left]
     }
