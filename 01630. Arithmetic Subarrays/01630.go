@@ -18,7 +18,9 @@ func isArithmetic(nums []int, l, r, query int, m map[int]int) bool {
         }
     }
 
-    if (max - min) % (size - 1) != 0 {
+    if max == min {
+        return true
+    } else if (max - min) % (size - 1) != 0 {
         return false
     }
 
