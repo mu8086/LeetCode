@@ -20,12 +20,12 @@ func isArithmetic(nums []int, l, r, query int, m map[int]int) bool {
 
     if max == min {
         return true
-    } else if (max - min) % (size - 1) != 0 {
+    } else if (max-min) % (size-1) != 0 {
         return false
     }
 
-    for tmp, diff := min, (max-min) / (size-1); size > 0; tmp, size = tmp+diff, size-1 {
-        if val, exists := m[tmp]; !exists || val != query {
+    for diff := (max-min) / (size-1); size > 0; min, size = min+diff, size-1 {
+        if query != m[min] {
             return false
         }
     }
@@ -39,7 +39,7 @@ func checkArithmeticSubarrays(nums []int, l []int, r []int) []bool {
     m := make(map[int]int)  // key: nums[i], value: lastest occurrence in l[i] ~ r[i]
 
     for i := 0; i < size; i++ {
-        ans[i] = isArithmetic(nums, l[i], r[i], i, m)
+        ans[i] = isArithmetic(nums, l[i], r[i], i+1, m)
     }
 
     return ans
