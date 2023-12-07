@@ -6,9 +6,7 @@ func equalPairs(grid [][]int) (count int) {
 
     tmp := [200]int{}
     for i := 0; i < rowSize; i++ {
-        for j := 0; j < colSize; j++ {
-            tmp[j] = grid[i][j]
-        }
+        copy(tmp[:], grid[i])
         m[tmp]++
     }
     for j := 0; j < colSize; j++ {
