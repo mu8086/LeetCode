@@ -12,7 +12,7 @@ func longestCommonSubsequence(text1 string, text2 string) int {
             if text1[i] == text2[j] {
                 m[i+1][j+1] = m[i][j]+1
             } else {
-                m[i+1][j+1] = max(max(m[i][j], m[i+1][j]), m[i][j+1])
+                m[i+1][j+1] = max(m[i+1][j], m[i][j+1])
             }
         }
     }
