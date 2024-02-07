@@ -1,31 +1,33 @@
 // https://leetcode.com/problems/sort-characters-by-frequency
 
-type charFreq struct {
-	char byte
-	freq int
-}
-
 func frequencySort(s string) string {
-	freqMap := make(map[byte]int)
-	for i := 0; i < len(s); i++ {
-		freqMap[s[i]]++
-	}
+    freq := [256]struct{
+        char byte
+        freq int
+    }{}
 
-	freqSlice := make([]charFreq, 0, 0)
-	for c, freq := range freqMap {
-		freqSlice = append(freqSlice, charFreq{char: c, freq: freq})
-	}
+    for i := 0; i < 256; i++ {
+        freq[i].char = byte(i)
+    }
 
-	sort.Slice(freqSlice, func(i, j int) bool {
-		return freqSlice[i].freq > freqSlice[j].freq
-	})
+    for _, c := range s {
+        freq[int(c)].freq++
+    }
 
-	var result []byte
-	for i := 0; i < len(freqSlice); i++ {
-		for j := 0; j < freqSlice[i].freq; j++ {
-			result = append(result, freqSlice[i].char)
-		}
-	}
+    sort.Slice(freq[:], func(i, j int) bool {
+        return freq[i].freq > freq[j].freq
+    })
 
-	return string(result)
+    uniqSize := sort.Search(len(freq), func(i int) bool {
+        return freq[i].freq == 0
+    })
+
+    ans := []byte{}
+    for i := 0; i < uniqSize; i++ {
+        for uniqChar, repeat := freq[i].char, freq[i].freq; repeat > 0; repeat-- {
+            ans = append(ans, uniqChar)
+        }
+    }
+
+    return string(ans)
 }
