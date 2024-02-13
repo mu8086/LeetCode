@@ -19,4 +19,10 @@ func majorityElement(nums []int) (majority int) {
     return majority 
 }
 
+// sort
+func majorityElementSort(nums []int) int {
+    sort.Ints(nums)
+    return nums[len(nums)/2]
+}
+
 // best solution: Boyer–Moore majority vote algorithm
