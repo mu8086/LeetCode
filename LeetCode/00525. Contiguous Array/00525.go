@@ -5,17 +5,17 @@ func findMaxLength(nums []int) int {
     m := make(map[int]int)
     m[0] = -1
 
-    for i, diff := 0, 0; i < size; i++ {
+    for i, sum := 0, 0; i < size; i++ {
         if nums[i] == 0 {
-            diff++
+            sum++
         } else {
-            diff--
+            sum--
         }
 
-        if idx, exists := m[diff]; exists {
+        if idx, exists := m[sum]; exists {
             ans = max(ans, i-idx)
         } else {
-            m[diff] = i
+            m[sum] = i
         }
     }
 
