@@ -71,3 +71,38 @@ func insert(intervals [][]int, newInterval []int) (ans [][]int) {
 
     return ans
 }
+
+func insertLinearSearch(intervals [][]int, newInterval []int) [][]int {
+    size := len(intervals)
+
+    ansIdx := 0
+    ans := [][]int{[]int{newInterval[0], newInterval[1]}}
+    
+    for i := 0; i < size; i++ {
+        newFrom, newTo := intervals[i][0], intervals[i][1]
+        from, to := ans[ansIdx][0], ans[ansIdx][1]
+
+        if newTo < from {                       // [newFrom-newTo] [from-to]
+            ans[ansIdx][0], ans[ansIdx][1] = newFrom, newTo
+            ans = append(ans, []int{newInterval[0], newInterval[1]})
+            ansIdx++
+        } else if newTo == from {               // [newFrom-(newTo==from)-to] 
+            ans[ansIdx][0] = newFrom
+        } else if newTo > from && newTo < to {  // [min(from,newFrom)-newTo-to]
+            ans[ansIdx][0] = min(from, newFrom)
+            ans[ansIdx][1] = to
+        } else if newTo == to {                 // [min(from,newFrom)-(newTo==to)]
+            ans[ansIdx][0] = min(from, newFrom)
+        } else {                                // newTo > to
+            if newFrom <= to {                  // [min(from,newFrom)-to-newTo]
+                ans[ansIdx][0] = min(from, newFrom)
+                ans[ansIdx][1] = newTo
+            } else {                            // [from-to] [newFrom-newTo]
+                ans = append(ans, intervals[i:]...)
+                break
+            }
+        }
+    }
+
+    return ans
+}
