@@ -41,3 +41,19 @@ func twoSum(nums []int, target int) []int {
     
     return []int{idx[l], idx[r]}
 }
+
+func twoSum2(nums []int, target int) []int {
+    m := make(map[int]int)  // key: num, val: index of num
+
+    for index, value := range nums {
+        tgtIdx, ok := m[target-value]
+        if !ok {
+            m[value] = index
+            continue
+        }
+
+        return []int{tgtIdx, index}
+    }
+
+    return []int{}
+}
