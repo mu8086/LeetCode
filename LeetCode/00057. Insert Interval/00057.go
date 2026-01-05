@@ -72,7 +72,7 @@ func insert(intervals [][]int, newInterval []int) (ans [][]int) {
     return ans
 }
 
-func insertLinearSearch(intervals [][]int, newInterval []int) [][]int {
+func insert2(intervals [][]int, newInterval []int) [][]int {
     size := len(intervals)
 
     ansIdx := 0
@@ -102,6 +102,36 @@ func insertLinearSearch(intervals [][]int, newInterval []int) [][]int {
                 break
             }
         }
+    }
+
+    return ans
+}
+
+func insert3(intervals [][]int, newInterval []int) [][]int {
+    idx := 0
+    ans := [][]int{newInterval}
+
+    isOverlapped := func(a, b []int) bool {
+        if a[0] > b[1] || b[0] > a[1] {
+            return false
+        }
+        return true
+    }
+    
+    for _, interval := range intervals {
+        if isOverlapped(ans[idx], interval) {
+            ans[idx][0] = min(ans[idx][0], interval[0])
+            ans[idx][1] = max(ans[idx][1], interval[1])
+            continue
+        }
+
+        if ans[idx][0] < interval[0] {
+            ans = append(ans, interval)
+        } else {
+            ans = append(ans, ans[idx])
+            ans[idx] = interval
+        }
+        idx++
     }
 
     return ans
