@@ -56,3 +56,36 @@ func maxLevelSum2(root *TreeNode) int {
 
     return level
 }
+
+func maxLevelSum3(root *TreeNode) int {
+    l := list.New()
+    l.PushBack(root)
+    ans, maxSum := 1, root.Val
+
+    for level := 1; ; level++ {
+        elementCount := l.Len()
+        if elementCount == 0 {
+            break
+        }
+
+        sum := 0
+        for i := 0; i < elementCount; i++ {
+            pop := l.Remove(l.Front()).(*TreeNode)
+            sum += pop.Val
+
+            if pop.Left != nil {
+                l.PushBack(pop.Left)
+            }
+            if pop.Right != nil {
+                l.PushBack(pop.Right)
+            }
+        }
+
+        if maxSum < sum {
+            maxSum = sum
+            ans = level
+        }
+    }
+
+    return ans
+}
