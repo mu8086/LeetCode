@@ -1,44 +1,54 @@
 // https://leetcode.com/problems/nearest-exit-from-entrance-in-maze
 
-func nearestExit(maze [][]byte, entrance []int) (ans int) {
-    lastRow, lastCol := len(maze)-1, len(maze[0])-1
+func nearestExit(maze [][]byte, entrance []int) int {
+    m, n := len(maze), len(maze[0])
 
-    isOutside := func(row, col int) bool {
-        return row < 0 || row > lastRow || col < 0 || col > lastCol
+    const (
+        WALL = '+'
+        EMPTY = '.'
+    )
+
+    type Point struct {
+        y int
+        x int
+    }
+    queue := make([]Point, 0)
+
+    enqueue := func(y, x int) {
+        maze[y][x] = WALL
+        queue = append(queue, Point{ y: y, x: x })
     }
 
-    maze[entrance[0]][entrance[1]] = '+'
-    queue := [][2]int{[2]int{entrance[0], entrance[1]}}
-
-    addToQueue := func(row, col int) {
-        if isOutside(row, col) {
-           return 
+    stepTo := func(y, x int) bool {
+        if y < 0 || y >= m || x < 0 || x >= n || maze[y][x] == WALL {
+            return false
         }
 
-        if maze[row][col] == '.' {
-            maze[row][col] = '+'
-            queue = append(queue, [2]int{row, col})
-        }
+        enqueue(y, x)
+        return true
     }
 
+    isBorder := func (y, x int) bool {
+        return y == 0 || y == m-1 || x == 0 || x == n-1
+    }
+
+    enqueue(entrance[0], entrance[1])
+
+    steps := 1
     for qSize := len(queue); qSize > 0; qSize = len(queue) {
         for i := 0; i < qSize; i++ {
-            row, col := queue[i][0], queue[i][1]
+            p := queue[i]
 
-            if row == 0 || col == 0 || row == lastRow || col == lastCol {
-                if row != entrance[0] || col != entrance[1] {
-                    return ans
-                }
+            if (stepTo(p.y-1, p.x) && isBorder(p.y-1, p.x)) || 
+                (stepTo(p.y+1, p.x) && isBorder(p.y+1, p.x)) ||
+                (stepTo(p.y, p.x-1) && isBorder(p.y, p.x-1)) ||
+                (stepTo(p.y, p.x+1) && isBorder(p.y, p.x+1)) {
+                return steps
             }
-
-            addToQueue(row-1, col)
-            addToQueue(row+1, col)
-            addToQueue(row, col-1)
-            addToQueue(row, col+1)
         }
 
-        ans++
         queue = queue[qSize:]
+        steps++
     }
 
     return -1
