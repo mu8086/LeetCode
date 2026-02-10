@@ -41,3 +41,93 @@ func minJumps(arr []int) (step int) {
 
     return step
 }
+
+func prepareIdxMapV2(arr []int) map[int][]int {
+    size := len(arr)
+    idxMap := make(map[int][]int)
+    for i := size-1 ; i >= 0; i-- {
+        slice, exists := idxMap[arr[i]]
+        if !exists {
+            slice = make([]int, 0)
+        }
+
+        slice = append(slice, i)
+        idxMap[arr[i]] = slice
+    }
+
+    return idxMap
+}
+
+func minJumpsV2(arr []int) int {
+    size := len(arr)
+    lastIdx := size-1
+    visited := make([]bool, size)
+    idxMap := prepareIdxMapV2(arr)
+
+    queue := []int{}
+
+    enqueue := func (idx int ) bool {
+        if idx == lastIdx {
+            return true
+        }
+
+        if visited[idx] {
+            return false
+        }
+        visited[idx] = true
+
+        queue = append(queue, idx)
+        return false
+    }
+
+    stepNextFrom := func (idx int) bool {
+        flag := false
+        if idx > 0 {
+            flag = enqueue(idx-1)
+            if flag {
+                return true
+            }
+        }
+        if idx < lastIdx {
+            flag = enqueue(idx+1)
+            if flag {
+                return true
+            }
+        }
+
+        slice := idxMap[arr[idx]]
+        delete(idxMap, arr[idx])
+        for _, v := range slice {
+            flag = enqueue(v)
+            if flag {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    flag := enqueue(0)
+    if flag {
+        return 0
+    }
+
+    steps := 0
+
+    Loop:
+    for qSize := len(queue); qSize > 0; qSize = len(queue) {
+        for i := 0; i < qSize; i++ {
+            idx := queue[i]
+
+            flag = stepNextFrom(idx)
+            if flag {
+                break Loop
+            }
+        }
+
+        queue = queue[qSize:]
+        steps++
+    }
+
+    return steps+1
+}
