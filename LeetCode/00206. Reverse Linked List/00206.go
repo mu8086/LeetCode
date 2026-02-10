@@ -1,16 +1,14 @@
 // https://leetcode.com/problems/reverse-linked-list
 
-func reverseList(head *ListNode) (ans *ListNode) {
-    if head == nil {
-        return nil
+func reverseList(head *ListNode) *ListNode {
+    dummy := ListNode{}
+
+    for head != nil {
+        curr := head
+        head = head.Next
+        curr.Next = dummy.Next
+        dummy.Next = curr
     }
 
-    for ans = head; head.Next != nil; {
-        tmp := head.Next
-        head.Next = head.Next.Next
-        tmp.Next = ans
-        ans = tmp
-    }
-
-    return ans
+    return dummy.Next
 }
