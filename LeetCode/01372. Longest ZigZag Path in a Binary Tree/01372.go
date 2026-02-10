@@ -1,32 +1,33 @@
 // https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree
 
-var longest = 0
-
-const (
-    L = 0
-    R = 1
-)
-
-func helper(root *TreeNode, from, count int) {
-    if root == nil {
-        if longest < count {
-            longest = count
-        }
-        return
-    }
-    if from == L {
-        helper(root.Left, L, 0)
-        helper(root.Right, R, count+1)
-    } else { // from R
-        helper(root.Left, L, count+1)
-        helper(root.Right, R, 0)
-    }
-}
-
 func longestZigZag(root *TreeNode) int {
-    helper(root.Left, L, 0)
-    helper(root.Right, R, 0)
-    ans := longest
-    longest = 0
+    const (
+        LEFT = iota
+        RIGHT
+    )
+
+    ans := 0
+
+    var dfs func(node *TreeNode, goLeft bool, level int)
+    dfs = func(node *TreeNode, goLeft bool, level int) {
+        if node == nil {
+            if ans < level {
+                ans = level
+            }
+            return
+        }
+
+        if goLeft {
+            dfs(node.Left, false, level+1)
+            dfs(node.Right, true, 0)
+        } else {
+            dfs(node.Left, false, 0)
+            dfs(node.Right, true, level+1)
+        }
+    }
+
+    dfs(root.Left, false, 0)
+    dfs(root.Right, true, 0)
+
     return ans
 }
