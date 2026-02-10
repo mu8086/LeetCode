@@ -1,24 +1,22 @@
 // https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list
 
-func listToIntSlice(head *ListNode) (slice []int) {
-    for ; head != nil; head = head.Next {
-        slice = append(slice, head.Val)
-    }
-
-    return slice
-}
-
 func pairSum(head *ListNode) int {
-    slice := listToIntSlice(head)
-    
-    lastIdx := len(slice)-1
-    max := slice[0] + slice[lastIdx]
-    for i := len(slice)/2-1; i > 0; i-- {
-        sum := slice[i] + slice[lastIdx-i]
-        if max < sum {
-            max = sum
-        }
+    slow, fast := head, head
+    for fast != nil && fast.Next != nil {
+        prev := slow
+
+        slow = slow.Next
+        fast = fast.Next.Next
+
+        prev.Next = head
+        head = prev
     }
 
-    return max
+    maxSum := 0
+    for slow != nil {
+        maxSum = max(maxSum, head.Val + slow.Val)
+        head, slow = head.Next, slow.Next
+    }
+
+    return maxSum
 }
